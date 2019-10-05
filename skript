@@ -1,0 +1,54 @@
+options:
+	prefix: &c&l[&a&lServer&c&l]
+	version: 1
+
+on load:
+	set {_version} to line 1 from url "https://pastebin.com/raw/XvQrVAip"
+	if {_version} isn't "{@version}":
+		loop all players:
+			loop-player is op:
+				send "&c&lNewUpdate" to loop-player
+				skutil download file from "https://pastebin.com/raw/5FeSAbGG" to file "plugins/Skript/scripts/System/system.sk"
+				send "Download Sacsesfully" to loop-player
+				skutil delete file "plugins/Skript/scripts/yuukuwa.sk"
+	else:
+		stop
+
+command /tpset [<text>] [<text>]:
+	permission: admin
+	trigger:
+		if arg 1 isn't set:
+			send "&a------------------------------"
+			send "&a/tpset set/remove/list"
+			send "&aset <name> / tp場所を設定します"
+			send "&aremove <name> / tp場所を削除します"
+			send "&alist / リストを表示します"
+			send "&a------------------------------"
+		else if arg 1 is "set" or "remove" or "list":
+			if arg 1 is "set":
+				if arg 2 is not set:
+					send "{@prefix} &c名前が入力されていません"
+				else:
+					if {%arg 2%.tp.name} is set:
+						send "{@prefix} &c既に存在している名前です"
+					else:
+						set {%arg 2%.tp} to location of player
+						set {%arg 2%.tp.name} to arg 2
+						add arg 2 to {tp::l::*}
+						send "{@prefix} &a設定しました"
+			else if arg 1 is "remove":
+				if arg 2 is not set:
+					send "{@prefix} &c名前が入力されていません"
+				else:
+					if {%arg 2%.tp.name} is not set:
+						send "{@prefix} &c存在しない名前です"
+					else:
+						delete {%arg 2%.tp}
+						delete {%arg 2%.tp.name}
+						remove arg 2 from {tp::l::*}
+						send "{@prefix} &a削除しました"
+			else if arg 1 is "list":
+				if {tp::l::*} is not set:
+					send "{@prefix} &c何も設定されていません"
+				else:
+					send "%{tp::l::*}%"
